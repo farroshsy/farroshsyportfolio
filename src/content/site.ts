@@ -24,7 +24,7 @@ export const site = {
   // Canonical origin — drives canonical URLs, OG cards and the sitemap.
   // Currently the Vercel default. Swap this for the real domain once bought;
   // it is the only place the origin is written down.
-  url: "https://farroshsy.vercel.app",
+  url: "https://farroshsyportfolio.vercel.app",
 
   // Flip to true once public/cv.pdf exists. Until then the CV page hides the
   // download link rather than shipping a 404.
