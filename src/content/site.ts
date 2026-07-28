@@ -32,7 +32,7 @@ export const site = {
   // Where the OCR demo widget sends uploads. Empty string = demo runs in
   // "offline" mode and shows a canned response instead of calling out.
   apiBase: process.env.NEXT_PUBLIC_OCR_API_BASE ?? "",
-  email: "farroschatgptgo@gmail.com",
+  email: "farros.syafei@gmail.com",
   links: {
     github: "https://github.com/farroshsy",
     linkedin: "https://www.linkedin.com/in/farroshilmisyafei/",

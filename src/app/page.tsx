@@ -1,72 +1,95 @@
+import Link from "next/link";
 import { site } from "@/content/site";
-import { featured, secondary } from "@/content/projects";
-import { FeaturedCard, SecondaryRow } from "@/components/project-card";
+import { featured } from "@/content/projects";
+import { log, fmtDate } from "@/content/log";
 import { PersonJsonLd } from "@/components/json-ld";
-import { LogStream, MaturityLegend } from "@/components/log-stream";
+
+const DOORS = [
+  {
+    href: "/work",
+    label: "Work",
+    note: "Systems that shipped, with the numbers and the limits.",
+  },
+  {
+    href: "/lab",
+    label: "Lab",
+    note: "Personal explorations. Unfinished on purpose.",
+  },
+  {
+    href: "/log",
+    label: "Log",
+    note: "Notes, things learned, things I am still unsure about.",
+  },
+  {
+    href: "/photos",
+    label: "Photos",
+    note: "Surabaya, mostly.",
+  },
+];
 
 export default function Home() {
+  const recent = log.slice(0, 3);
+
   return (
     <div className="mx-auto max-w-3xl px-6">
       <PersonJsonLd />
 
-      <section className="pt-20 pb-16">
-        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-balance">
+      <section className="pt-24 pb-4">
+        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">
           {site.name}
         </h1>
-        <p className="mt-4 text-lg text-fg-muted text-pretty max-w-2xl">
+        <p className="mt-5 text-xl text-fg-muted text-pretty max-w-xl leading-snug">
           {site.tagline}
         </p>
-        <div className="mt-8 space-y-4 max-w-2xl text-fg-muted">
-          {site.intro.map((line) => (
-            <p key={line}>{line}</p>
+        <p className="mt-6 font-mono text-xs text-fg-faint">{site.location}</p>
+      </section>
+
+      <nav aria-label="Sections" className="mt-14 border-t border-line">
+        {DOORS.map((d) => (
+          <Link
+            key={d.href}
+            href={d.href}
+            className="group flex items-baseline justify-between gap-6 border-b border-line py-5 hover:text-accent transition-colors"
+          >
+            <span className="text-lg font-medium">{d.label}</span>
+            <span className="text-sm text-fg-muted text-right group-hover:text-accent transition-colors">
+              {d.note}
+            </span>
+          </Link>
+        ))}
+      </nav>
+
+      <section className="mt-14">
+        <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-fg-faint">
+          Latest
+        </h2>
+        <ul className="mt-5 space-y-4">
+          {recent.map((e) => (
+            <li key={e.id} className="flex gap-4 items-baseline">
+              <time className="font-mono text-xs text-fg-faint w-24 shrink-0">
+                {fmtDate(e.date)}
+              </time>
+              <Link
+                href="/log"
+                className="text-sm hover:text-accent transition-colors text-pretty"
+              >
+                {e.title}
+              </Link>
+            </li>
           ))}
-        </div>
-        <p className="mt-8 font-mono text-xs text-fg-faint">{site.location}</p>
+        </ul>
+        <Link
+          href="/log"
+          className="mt-5 inline-block font-mono text-xs text-accent hover:underline underline-offset-4"
+        >
+          all entries →
+        </Link>
       </section>
 
-      <section id="work" className="scroll-mt-20">
-        <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-fg-faint">
-          Selected work
-        </h2>
-        <div className="mt-6 space-y-6">
-          {featured.map((p) => (
-            <FeaturedCard key={p.slug} project={p} />
-          ))}
-        </div>
-      </section>
-
-      {secondary.length > 0 && (
-        <section className="mt-16">
-          <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-fg-faint">
-            Also
-          </h2>
-          <ul className="mt-4">
-            {secondary.map((p) => (
-              <SecondaryRow key={p.slug} project={p} />
-            ))}
-          </ul>
-        </section>
-      )}
-
-      <section id="log" className="mt-20 scroll-mt-20">
-        <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-fg-faint">
-          The log
-        </h2>
-        <p className="mt-4 max-w-2xl text-fg-muted text-pretty">
-          One stream: things shipped, things learned, things I am still unsure
-          about. Each entry carries how settled it is, because a site that only
-          publishes finished thoughts publishes almost nothing.
-        </p>
-        <MaturityLegend />
-        <LogStream />
-      </section>
-
-      <section className="mt-16 border-t border-line pt-10">
-        <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-fg-faint">
-          Contact
-        </h2>
-        <p className="mt-4 text-fg-muted max-w-2xl">
-          Open to new roles. Best way to reach me is email.
+      <section className="mt-16 border-t border-line pt-10 pb-4">
+        <p className="text-fg-muted max-w-xl text-pretty">
+          {featured.length} systems worth reading about, and a lab for the rest.
+          Open to new roles — email is the fastest way to reach me.
         </p>
         <a
           href={`mailto:${site.email}`}
