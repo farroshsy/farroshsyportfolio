@@ -16,10 +16,16 @@ export const site = {
   // there is a reason to, and this is the only line that has to change.
   role: "Software engineer",
 
-  // The site leads with this instead of a title. It answers the question a
-  // visitor actually has, and it forecloses nothing.
+  // The site leads with this instead of a title.
+  //
+  // Deliberately says what gets built, not what gets disclosed. An earlier
+  // version ended "...and publish the number that weakens the claim" — which
+  // does not say whose claim, so a hiring reader defaults to theirs. The trait
+  // belongs in the evidence (published hashes, pre-registered protocols, a
+  // benchmark that scores its author last), not in the slogan. Demonstrating
+  // it is stronger than announcing it.
   tagline:
-    "I build systems that can be checked, and publish the number that weakens the claim.",
+    "I build systems that can be checked.",
   location: "Surabaya, Indonesia",
   // Canonical origin — drives canonical URLs, OG cards and the sitemap.
   // Currently the Vercel default. Swap this for the real domain once bought;
