@@ -13,7 +13,7 @@ history and no embeddings, and every decision replays.
 stateless verification API for Indonesian KTP, SIM, STNK and KIR. Returns
 `needs_review` rather than guessing.
 
-Write-ups and numbers: **[farroshsy.vercel.app](https://farroshsyportfolio.vercel.app)**
+Write-ups and numbers: **[farroshsyportfolio.vercel.app](https://farroshsyportfolio.vercel.app)**
 
 [LinkedIn](https://www.linkedin.com/in/farroshilmisyafei/) ·
 [Kaggle](https://www.kaggle.com/farroshs)
