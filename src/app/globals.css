@@ -1,26 +1,158 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ---------------------------------------------------------------------------
+   Tokens from the identity specification (Claude Design, v1, 2026-07).
+   Contrast ratios are the spec's own measurements against the ground.
+   --------------------------------------------------------------------------- */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root {
+  /* ground */
+  --ground: #f4f0e9;
+  --ground-raised: #fbf8f3;
+  --ground-sunken: #e8e2d7;
+  --rule: #d8d0c2;
+
+  /* ink */
+  --ink: #1b1815; /* 15.5:1 */
+  --ink-muted: #57504a; /*  6.97:1 */
+  --ink-faint: #8a8177; /*  3.37:1 — non-text only, never body */
+
+  /* epistemic status — meaning, not mood */
+  --status-seedling: #886110;
+  --status-budding: #235857;
+  --status-evergreen: #16331f;
+
+  /* interaction */
+  --accent: #2a4fc4;
+  --accent-pressed: #1b3aa0;
+
+  /* reserved: "this was checked" — nowhere else */
+  --verified: #b03a24;
+
+  /* motion */
+  --dur-micro: 120ms;
+  --dur-state: 180ms;
+  --dur-enter: 240ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    --ground: #16140f;
+    --ground-raised: #1e1b15;
+    --ground-sunken: #100e0a;
+    --rule: #302c24;
+    --ink: #ede8de;
+    --ink-muted: #a79e92;
+    --ink-faint: #6e675d;
+    --status-seedling: #ac7f2c;
+    --status-budding: #5fc0b9;
+    --status-evergreen: #9fe0b0;
+    --accent: #7e9bff;
+    --accent-pressed: #a9bdff;
+    --verified: #e4623f;
   }
 }
 
+:root[data-theme="dark"] {
+  --ground: #16140f;
+  --ground-raised: #1e1b15;
+  --ground-sunken: #100e0a;
+  --rule: #302c24;
+  --ink: #ede8de;
+  --ink-muted: #a79e92;
+  --ink-faint: #6e675d;
+  --status-seedling: #ac7f2c;
+  --status-budding: #5fc0b9;
+  --status-evergreen: #9fe0b0;
+  --accent: #7e9bff;
+  --accent-pressed: #a9bdff;
+  --verified: #e4623f;
+}
+
+@theme inline {
+  --color-bg: var(--ground);
+  --color-bg-raised: var(--ground-raised);
+  --color-bg-sunken: var(--ground-sunken);
+  --color-line: var(--rule);
+  --color-fg: var(--ink);
+  --color-fg-muted: var(--ink-muted);
+  --color-fg-faint: var(--ink-faint);
+  --color-seedling: var(--status-seedling);
+  --color-budding: var(--status-budding);
+  --color-evergreen: var(--status-evergreen);
+  --color-accent: var(--accent);
+  --color-accent-pressed: var(--accent-pressed);
+  --color-verified: var(--verified);
+  --font-sans: var(--font-plex-sans), system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+}
+
+/* Theme-toggle labels. Light is the base case; every dark signal flips them. */
+.when-dark {
+  display: none;
+}
+.when-light {
+  display: inline;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .when-dark {
+    display: inline;
+  }
+  :root:not([data-theme="light"]) .when-light {
+    display: none;
+  }
+}
+
+:root[data-theme="dark"] .when-dark {
+  display: inline;
+}
+:root[data-theme="dark"] .when-light {
+  display: none;
+}
+
+html {
+  background: var(--ground);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-plex-sans), system-ui, sans-serif;
+  line-height: 1.65;
+}
+
+/* Metrics, dates, hashes and tags must align in columns. */
+.font-mono,
+code,
+pre,
+time {
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--ground);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-micro: 0ms;
+    --dur-state: 0ms;
+    --dur-enter: 0ms;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# farros-portfolio
 
-## Getting Started
-
-First, run the development server:
+Personal site. Next.js 16 (App Router) · TypeScript · Tailwind v4 · deployed on
+Vercel.
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Where things live
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| What | Where |
+| --- | --- |
+| Name, tagline, links, intro copy | `src/content/site.ts` |
+| Projects, metrics, case-study prose | `src/content/projects.ts` |
+| Live OCR demo widget | `src/components/ocr-demo.tsx` |
+| Server-side proxy to the OCR API | `src/app/api/demo/ocr/route.ts` |
+| Deploy steps | `DEPLOY.md` |
+| GitHub profile README + cleanup script | `github/` |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Copy edits should almost always be in `src/content/` — the components read from
+there and nothing else hardcodes your details.
 
-## Learn More
+## Adding a project
 
-To learn more about Next.js, take a look at the following resources:
+Append to `projects` in `src/content/projects.ts`. `featured: true` gives it a
+card on the home page and a full case-study route at `/work/<slug>`;
+`featured: false` puts it in the short "Also" list. Routes are generated from
+the array, so there is no page file to add.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Case-study bodies support `**bold**` and nothing else — deliberately not a
+Markdown pipeline, since the content is short and typed.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Notes
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **No shadcn/ui.** Components are hand-written. Fewer dependencies than the
+  design surface justifies here.
+- **Theme** follows `prefers-color-scheme`, with a toggle that writes
+  `data-theme` on `<html>` and persists to `localStorage`. `ThemeScript` in the
+  document head applies it before paint so there is no flash.
+- **The demo proxies server-side.** The API key never reaches the browser and
+  the API needs no CORS rules. Size, MIME type, and doctype are validated before
+  anything is forwarded.
