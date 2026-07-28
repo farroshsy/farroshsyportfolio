@@ -47,9 +47,17 @@ export const projects: Project[] = [
     ],
     sections: [
       {
+        heading: "Why I built it",
+        body: [
+          "In 2025 Indonesia made coding and artificial intelligence an elective subject across primary and secondary schools. What stopped me was not the policy but the number sitting next to it: in 2022, **5.31%** of primary schools had computer access for learning — down from 8.48% the year before.",
+          "An adaptive system picks what to teach next from a mastery estimate, and that estimate is built from the learner's own interaction history. A subject that has just opened has no history at all. So the system is at its weakest exactly where it is needed most — the first few interactions, in the schools with the least of everything else.",
+          "The available approaches want a GPU or a cloud service per student. The institutions that can afford that are the ones that need it least. The method fails precisely on the population it was meant to serve, and it fails quietly, because nobody measures the first fifty interactions separately.",
+          "So I built it as an event log first and a tutor second — no embeddings, no history required, readiness on a new concept inferred from its prerequisites.",
+        ],
+      },
+      {
         heading: "Problem",
         body: [
-          "In 2025 Indonesia made coding and artificial intelligence an elective subject across primary and secondary schools. In 2022, **5.31%** of primary schools had computer access for learning — down from 8.48% the year before.",
           "An adaptive system picks what to show next from a mastery estimate, and that estimate is built from the learner's interaction history. In a subject that has just opened, no such history exists. The system is weakest exactly when it is needed most: the first few interactions.",
           "And the available approaches want a GPU or a cloud service per student. The institutions that can afford that are the ones that need it least. The method fails precisely on the population it was supposed to serve.",
         ],
@@ -106,9 +114,16 @@ export const projects: Project[] = [
     ],
     sections: [
       {
+        heading: "Why I built it",
+        body: [
+          "Before a truck leaves, four documents have to be right: the driver's KTP, the SIM saying they may drive that class of vehicle, the vehicle's STNK, and the KIR saying it is roadworthy.",
+          "During my internship I watched how all four were checked. Drivers photographed them on their phones, sent them through a messaging app, and staff read the values and typed them in again by hand. It was slow and inconsistent, but what bothered me most was that it **left no trace**. Expired licences, the wrong vehicle papers, and document photos reused across drivers surfaced only once they had already become an incident or a compliance finding.",
+          "What I did not expect was how much of the work turned out to be refusing to guess.",
+        ],
+      },
+      {
         heading: "Problem",
         body: [
-          "Logistics onboarding in Indonesia runs on four paper artifacts: the driver's KTP and SIM, and the vehicle's STNK and KIR. Every one of them arrives as a phone photo — skewed, glared, cropped by a thumb.",
           "Generic OCR reads these badly. Not because the characters are hard, but because the *fields* are hard: a name and its label sit in different places on a SIM than on a KTP, and a plate number on an STNK is printed in a font general models were never asked to care about.",
         ],
       },
