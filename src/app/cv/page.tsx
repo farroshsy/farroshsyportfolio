@@ -26,8 +26,8 @@ const experience = [
   {
     role: "Teaching Assistant, Operating Systems",
     org: "Department of Informatics, ITS",
-    year: "Feb 2023 — Jun 2026",
-    detail: "Led lab sessions, wrote practicum problems and graded assignments across multiple cohorts.",
+    year: "Feb 2023 — Jun 2023",
+    detail: "Led lab sessions, wrote practicum problems and graded assignments.",
   },
 ];
 
