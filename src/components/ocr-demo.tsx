@@ -2,8 +2,19 @@
 
 import { useRef, useState } from "react";
 
-const DOC_TYPES = ["KTP", "SIM", "STNK", "KIR"] as const;
+// AUTO first: the API's own type detection is the behaviour worth showing.
+// Forcing a type on an unrelated photo makes the parser fill fields from
+// whatever text it finds, so the forced types are opt-in.
+const DOC_TYPES = ["AUTO", "KTP", "SIM", "STNK", "KIR"] as const;
 type DocType = (typeof DOC_TYPES)[number];
+
+const DOC_TYPE_LABEL: Record<DocType, string> = {
+  AUTO: "Auto-detect",
+  KTP: "KTP",
+  SIM: "SIM",
+  STNK: "STNK",
+  KIR: "KIR",
+};
 
 /**
  * Drop synthetic / redacted sample images into public/samples/ and list them
@@ -16,14 +27,62 @@ const SAMPLES: { label: string; docType: DocType; src: string }[] = [
   // { label: "KTP (synthetic)", docType: "KTP", src: "/samples/ktp-synthetic.jpg" },
 ];
 
+// Plain-language versions of the API's validation reason codes. Unknown codes
+// fall back to the code itself with underscores replaced.
+const REASON_TEXT: Record<string, string> = {
+  resolution_too_low: "image resolution is too low",
+  image_blurry: "image is blurry",
+  image_too_dark: "image is too dark",
+  nik_pattern_not_found: "no valid NIK found",
+  missing_card_header: "card header not found",
+};
+
+function reasonText(code: string): string {
+  if (REASON_TEXT[code]) return REASON_TEXT[code];
+  const markers = code.match(/^missing_([a-z]+)_markers$/);
+  if (markers) return `no ${markers[1].toUpperCase()} markers found`;
+  return code.replace(/_/g, " ");
+}
+
+type Field = { value: unknown; confidence?: number };
+type Summary = {
+  documentType: string;
+  valid: boolean;
+  reasons: string[];
+  fields: [string, string][];
+};
+
+/** Pull the parts a reader needs out of the API response, or null if the
+ *  body is not the shape we expect (then only the raw JSON is shown). */
+function summarise(body: unknown): Summary | null {
+  if (!body || typeof body !== "object") return null;
+  const b = body as {
+    document_type?: string;
+    data?: {
+      fields?: Record<string, Field>;
+      validation?: { is_probably_valid?: boolean; reasons?: string[] };
+    };
+  };
+  if (!b.data || typeof b.document_type !== "string") return null;
+  const fields = Object.entries(b.data.fields ?? {})
+    .filter(([, f]) => f && f.value !== null && f.value !== undefined && f.value !== "")
+    .map(([k, f]) => [k.replace(/_/g, " "), String(f.value)] as [string, string]);
+  return {
+    documentType: b.document_type,
+    valid: b.data.validation?.is_probably_valid === true,
+    reasons: b.data.validation?.reasons ?? [],
+    fields,
+  };
+}
+
 type State =
   | { status: "idle" }
   | { status: "loading" }
-  | { status: "done"; body: string; ok: boolean }
+  | { status: "done"; raw: string; summary: Summary | null; ok: boolean }
   | { status: "error"; message: string };
 
 export function OcrDemo() {
-  const [docType, setDocType] = useState<DocType>("KTP");
+  const [docType, setDocType] = useState<DocType>("AUTO");
   const [state, setState] = useState<State>({ status: "idle" });
   const [fileName, setFileName] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -42,13 +101,16 @@ export function OcrDemo() {
         body: form,
       });
       const text = await res.text();
-      let pretty = text;
+      let raw = text;
+      let summary: Summary | null = null;
       try {
-        pretty = JSON.stringify(JSON.parse(text), null, 2);
+        const parsed = JSON.parse(text);
+        raw = JSON.stringify(parsed, null, 2);
+        if (res.ok) summary = summarise(parsed);
       } catch {
         /* not JSON — show as-is */
       }
-      setState({ status: "done", body: pretty, ok: res.ok });
+      setState({ status: "done", raw, summary, ok: res.ok });
     } catch {
       setState({
         status: "error",
@@ -97,7 +159,7 @@ export function OcrDemo() {
                   : "border-line text-fg-muted hover:text-fg"
               }`}
             >
-              {t}
+              {DOC_TYPE_LABEL[t]}
             </button>
           ))}
         </div>
@@ -141,7 +203,9 @@ export function OcrDemo() {
           >
             {state.status === "loading"
               ? "Processing…"
-              : `Upload a ${docType} image (JPEG, PNG, WebP · max 6 MB)`}
+              : docType === "AUTO"
+                ? "Upload a KTP, SIM, STNK or KIR image (JPEG, PNG, WebP · max 6 MB)"
+                : `Upload a ${docType} image (JPEG, PNG, WebP · max 6 MB)`}
           </button>
           {fileName && (
             <p className="mt-2 font-mono text-[11px] text-fg-faint truncate">
@@ -164,24 +228,77 @@ export function OcrDemo() {
 
         {state.status === "done" && (
           <div className="mt-4">
-            <div className="flex items-center justify-between">
-              <p className="font-mono text-[11px] uppercase tracking-wider text-fg-faint">
-                Response
-              </p>
-              <span
-                className={`font-mono text-[11px] ${
-                  state.ok ? "text-accent" : "text-verified"
-                }`}
-              >
-                {state.ok ? "200 OK" : "error"}
-              </span>
-            </div>
-            <pre className="mt-2 max-h-96 overflow-auto rounded border border-line bg-bg p-4 font-mono text-xs leading-relaxed">
-              {state.body}
-            </pre>
+            {state.summary && <Verdict summary={state.summary} />}
+            <details className="mt-4" open={!state.summary}>
+              <summary className="cursor-pointer font-mono text-[11px] uppercase tracking-wider text-fg-faint flex items-center justify-between">
+                <span>Raw response</span>
+                <span className={state.ok ? "text-accent" : "text-verified"}>
+                  {state.ok ? "200 OK" : "error"}
+                </span>
+              </summary>
+              <pre className="mt-2 max-h-96 overflow-auto rounded border border-line bg-bg p-4 font-mono text-xs leading-relaxed">
+                {state.raw}
+              </pre>
+            </details>
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function Verdict({ summary }: { summary: Summary }) {
+  if (summary.documentType === "UNKNOWN") {
+    return (
+      <div className="rounded border border-line bg-bg p-4">
+        <p className="font-mono text-xs uppercase tracking-wider text-fg">
+          Not recognised · nothing extracted
+        </p>
+        <p className="mt-2 text-sm text-fg-muted">
+          The photo did not carry enough markers of a KTP, SIM, STNK or KIR, so
+          the API declined to guess a type or fill any fields. That is the
+          intended behaviour, not a failure.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded border border-line bg-bg p-4">
+      <p className="font-mono text-xs uppercase tracking-wider text-fg">
+        {summary.documentType} ·{" "}
+        {summary.valid ? (
+          <span className="text-accent">looks valid</span>
+        ) : (
+          <span className="text-verified">needs review</span>
+        )}
+      </p>
+      {!summary.valid && (
+        <p className="mt-2 text-sm text-fg-muted">
+          Flagged for a human because{" "}
+          {summary.reasons.length > 0
+            ? summary.reasons.map(reasonText).join(", ")
+            : "the document did not pass validation"}
+          . Fields below are what the parser read and are{" "}
+          <strong className="font-medium text-fg">not verified</strong>.
+        </p>
+      )}
+      {summary.fields.length > 0 ? (
+        <dl
+          className={`mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm ${
+            summary.valid ? "" : "opacity-60"
+          }`}
+        >
+          {summary.fields.map(([k, v]) => (
+            <div key={k} className="contents">
+              <dt className="font-mono text-xs text-fg-faint pt-0.5">{k}</dt>
+              <dd className="text-fg-muted break-words">{v}</dd>
+            </div>
+          ))}
+        </dl>
+      ) : (
+        <p className="mt-2 text-sm text-fg-muted">No fields could be read.</p>
+      )}
     </div>
   );
 }
