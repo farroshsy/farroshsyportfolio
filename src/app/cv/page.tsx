@@ -10,8 +10,24 @@ export const metadata: Metadata = {
 const education = [
   {
     school: "Institut Teknologi Sepuluh Nopember (ITS)",
-    detail: "Informatics / Computer Science, Surabaya",
-    year: "2020 — 2025",
+    detail: "B.S. Informatics Engineering, Surabaya · GPA 3.72 / 4.00",
+    year: "Graduated Oct 2026",
+  },
+];
+
+const experience = [
+  {
+    role: "Software Engineering Intern",
+    org: "PT Nusantara Baskara Jaya (Nusaraya) · Jakarta",
+    year: "Dec 2024 — Jun 2025",
+    detail:
+      "Built a stateless OCR verification API for driver and vehicle documents (KTP, SIM, STNK, KIR) used in onboarding and dispatch. 95% document-type detection, 83–90% field accuracy, uncertain reads routed to a human.",
+  },
+  {
+    role: "Teaching Assistant, Operating Systems",
+    org: "Department of Informatics, ITS",
+    year: "Feb 2023 — Jun 2026",
+    detail: "Led lab sessions, wrote practicum problems and graded assignments across multiple cohorts.",
   },
 ];
 
@@ -27,6 +43,10 @@ const skills = [
   {
     group: "Frontend",
     items: ["TypeScript", "Next.js", "React", "Tailwind CSS", "Three.js"],
+  },
+  {
+    group: "iOS",
+    items: ["Swift", "SwiftUI", "WidgetKit", "App Intents", "CryptoKit", "Core ML"],
   },
   {
     group: "Architecture",
@@ -85,6 +105,26 @@ export default function CvPage() {
       </dl>
 
       <section className="mt-12">
+        <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-fg-faint">
+          Experience
+        </h2>
+        <ul className="mt-4 space-y-5">
+          {experience.map((e) => (
+            <li key={e.role}>
+              <div className="flex items-baseline justify-between gap-4">
+                <h3 className="font-medium">{e.role}</h3>
+                <span className="font-mono text-xs text-fg-faint shrink-0">
+                  {e.year}
+                </span>
+              </div>
+              <p className="mt-0.5 text-sm text-fg-faint">{e.org}</p>
+              <p className="mt-1 text-sm text-fg-muted">{e.detail}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mt-10">
         <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-fg-faint">
           Projects
         </h2>

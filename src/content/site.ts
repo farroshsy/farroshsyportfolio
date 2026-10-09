@@ -34,7 +34,7 @@ export const site = {
 
   // Flip to true once public/cv.pdf exists. Until then the CV page hides the
   // download link rather than shipping a 404.
-  hasCvPdf: false,
+  hasCvPdf: true,
   // Where the OCR demo widget sends uploads. Empty string = demo runs in
   // "offline" mode and shows a canned response instead of calling out.
   apiBase: process.env.NEXT_PUBLIC_OCR_API_BASE ?? "",

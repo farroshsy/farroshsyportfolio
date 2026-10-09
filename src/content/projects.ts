@@ -154,6 +154,54 @@ export const projects: Project[] = [
       },
     ],
   },
+  {
+    slug: "compass",
+    title: "Compass — A Habit Tracker You Can Verify",
+    blurb:
+      "Native iOS app whose milestones are signed in the Secure Enclave and anchored to Bitcoin. 482 tests, and a verifier a stranger can run.",
+    year: "2026",
+    featured: true,
+    repo: "https://github.com/farroshsy/compass",
+    stack: [
+      "Swift",
+      "SwiftUI",
+      "WidgetKit",
+      "App Intents",
+      "CryptoKit",
+      "OpenTimestamps",
+    ],
+    metrics: [
+      { label: "Tests", value: "482", note: "46 suites · one touches the network" },
+      { label: "Writers", value: "2", note: "app + widget on one log, tested adversarially" },
+      { label: "Signing", value: "P-256", note: "Secure Enclave key, on device" },
+      { label: "Anchor", value: "Bitcoin", note: "via OpenTimestamps · claimed only once confirmed" },
+    ],
+    sections: [
+      {
+        heading: "Problem",
+        body: [
+          "A habit tracker's record is only worth what you trust the app to be. It can be edited, backdated or lost, so the record proves nothing to anyone else.",
+          "Compass keeps the product dead simple — one screen, four checkboxes, under three seconds to open and close — and puts the effort underneath: a record you can hand to a stranger, who can check it **without trusting you or the app**.",
+        ],
+      },
+      {
+        heading: "Architecture",
+        body: [
+          "Every check-in is an event in an append-only journal with hand-written canonical byte encoding, a SHA-256 `content_hash`, and a per-writer `prev` chain. App state is a projection of that log, rebuilt deterministically.",
+          "The Home Screen widget is a **second writer** to the same file. Both processes record through one append API, and an adversarial two-process test was written for it — it immediately exposed an ordering defect where a cold widget's un-check was silently discarded. Fixed, and the test stays.",
+          "The code is a layered Swift package — Domain, Application, Infrastructure, UI — with 482 tests across 46 suites using Swift Testing.",
+        ],
+      },
+      {
+        heading: "Certificates, and what they do not claim",
+        body: [
+          "Achievement rules ship as data and evaluate as a pure function of the log, so a new rule backfills over existing history. Each award commits to the exact events it counted and is signed on the spot with a **Secure Enclave P-256 key**.",
+          "Digests are then submitted to OpenTimestamps for Bitcoin anchoring. The certificate says \"Sealed on this device\" until a proof actually comes back confirmed, and only then adds the anchor date — it never claims more than is true at that moment.",
+          "A standalone verifier in Python, standard library only, re-derives every claim from the exported log rather than believing it.",
+        ],
+      },
+    ],
+  },
   // Nothing else goes here until it can carry its own page.
   //
   // The bar: a project earns a slot when the site can *show* something —
