@@ -27,7 +27,7 @@ export const projects: Project[] = [
     slug: "hcie",
     title: "HCIE — Event-Sourced Intelligent Tutoring System",
     blurb:
-      "Adaptive tutoring system and research instrument. Beats BKT on cold-start AUC over 232k learners, with bit-identical replay anyone can verify.",
+      "Adaptive tutoring system and research instrument. Matches BKT on cold-start accuracy with zero training, and every decision replays bit-identically.",
     year: "2026",
     featured: true,
     repo: "https://github.com/farroshsy/hcie-system",
@@ -40,8 +40,8 @@ export const projects: Project[] = [
       "Next.js",
     ],
     metrics: [
-      { label: "Cold-start AUC", value: "0.6051", note: "vs BKT 0.5963 · 95% CI [+0.0017, +0.0226]" },
-      { label: "Scale", value: "1.98M", note: "trajectory rows · 232,440 learners" },
+      { label: "Cold-start AUC", value: "0.6051", note: "on par with BKT 0.5963 · zero training · 93 learners" },
+      { label: "First attempt", value: "0.62–0.76", note: "AUC · BKT without history ≈ 0.50" },
       { label: "Replay", value: "Bit-identical", note: "published md5, independently checkable" },
       { label: "Transfer", value: "+0.053", note: "placebo-corrected · p<0.001 over 1000 shuffles" },
     ],
@@ -72,7 +72,7 @@ export const projects: Project[] = [
       {
         heading: "Results, and what they do not show",
         body: [
-          "Cold-start AUC is **0.6051** against BKT's 0.5963, significant at n=76 with a 95% CI of [+0.0017, +0.0226]. Cross-family durable transfer measures **+0.053** as a placebo-corrected residual, p<0.001 across 1000 shuffled-DAG permutations, over 1,976,020 rows and 232,440 learners.",
+          "On the sealed evaluation — 96,727 interactions from 93 learners — cold-start AUC is **0.6051** against BKT's 0.5963, with no training at all, while DKT, SAKT and GKT each needed 17 users of pre-training and scored lower. The gap to BKT is small (95% CI [+0.0017, +0.0226] on a 76-learner companion set), so the claim is parity without training, not superiority. Cross-family durable transfer measures **+0.053** as a placebo-corrected residual, p<0.001 across 1000 shuffled-DAG permutations, over 1,976,020 rows and 232,440 learners.",
           "The reporting rule was fixed **before any data was read**: an accuracy difference can point one way within small groups and the other way in aggregate — Simpson's paradox — and if that appeared, both readings would be reported together rather than one chosen. It appeared. The pooled headline is partly an aggregation artifact; per-window, BKT is competitive and wins outright at very low N.",
           "That distinction matters more than it looks. This is not honesty after the fact, it is a commitment made before the fact — and because every decision was recorded through event sourcing, the trajectories were still there to slice when the time came. A system that overwrites its own state could not have told me.",
           "The transfer result is correlational and topological, not causal: there is no intervention and no counterfactual. The proximity (0.134) and same-family (0.119) confounds are **larger than the cross-family effect itself**. The effect is real; it is not cleanly causal, and saying otherwise would be a better headline and a worse claim.",
